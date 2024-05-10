@@ -1,0 +1,19 @@
+[project]
+name = "Login-with-django"
+version = "0.1.0"
+description = "kauaf"
+authors = [
+    {name = "kauabarros-24", email = "martinsbarroskaua@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
