@@ -19,7 +19,6 @@ class LoginView(APIView):
         #Buscar usuário
         email = request.data['email']
         password = request.data['password']
-        
         user = User.objects.filter(email=email).first()
         
         #Validação de login
@@ -28,7 +27,6 @@ class LoginView(APIView):
         elif not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
         
-
         payload = {
             'id': user.id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
@@ -36,10 +34,12 @@ class LoginView(APIView):
         }
 
         token = jwt.encode(payload, 'secret', algorithm='HS256')
+        
+        response = Response()
+        response.set_cookie(key='jwt', value=token, httponly=True)
 
-        response  = Response({
+        response.data = {
             'jwt': token
-            #'message': 'Login realizado com sucesso'
-        })
+        }
         
         return response
