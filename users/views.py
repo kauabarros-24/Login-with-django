@@ -4,7 +4,9 @@ from rest_framework.exceptions import AuthenticationFailed
 from .serializer import UserSerializer
 from .models import User
 import jwt, datetime
-from django.utils import timezone
+#from django.utils import timezone
+#import os
+#import base64   
 class RegisterView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -29,14 +31,15 @@ class LoginView(APIView):
 
         payload = {
             'id': user.id,
-            'exp': timezone.now() + datetime.timedelta(minutes=60),
-            'iat': timezone.now()
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+            'iat': datetime.datetime.utcnow()
         }
 
-        token = jwt.encode(payload, 'secret', algorithm='HS256').decode('utf-8')
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
 
         response  = Response({
             'jwt': token
+            #'message': 'Login realizado com sucesso'
         })
         
         return response
