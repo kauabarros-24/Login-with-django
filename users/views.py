@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, APIException
+from rest_framework import exceptions
 from .serializer import UserSerializer
 from .models import User, ForgetPassword
 import jwt, datetime, random, string
@@ -59,7 +60,6 @@ class UserView(APIView):
         serializer = UserSerializer(user)
 
         return Response(serializer.data)
-    
 class LogoutView(APIView):
     def post(self, request):
         response = Response()
@@ -67,12 +67,8 @@ class LogoutView(APIView):
 
         response.data = {
             "Message": "Logout do usuário realizado"
-
         }
-    
         return response
-    
-
 class ForgetPasswordView(APIView):
     def post(self, request):
         email = request.data['email']
@@ -90,4 +86,26 @@ class ForgetPasswordView(APIView):
 
         return Response({
             'message': 'sucesso!'
+        })
+    
+class ResetPasswordView(APIView):
+    def post(self, request):
+        data = request.data
+        senha = data['password']
+
+        if senha != data['password_confirm']:
+            raise exceptions.APIException('As senhas não coincidem')
+        
+        passwordReset = ForgetPassword.objects.filter(token=data['token']).first()
+
+        user = User.objects.filter(email=passwordReset.email).first()
+
+        if not user:
+            raise exceptions.NotFound("Usuário não encontrado!")
+        
+        user.set_password(senha)
+        user.save()
+
+        return Response({
+            'message': "Senha recadastrada com sucesso!"
         })
