@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from django.core.mail import send_mail
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from .serializer import UserSerializer
@@ -79,6 +80,14 @@ class ForgetPasswordView(APIView):
         
         ForgetPassword.objects.create(email=email, token=token)
 
+        send_mail(
+            subject='Reset your password',
+            message='Click <a href="http://127.0.0.1:8000/api/forget">Here</a> for you reset your password'.format(token),
+            from_email='martinsbarroskaua@gmail.com',
+            recipient_list=[email]
+        )      
+
+
         return Response({
-            
+            'message': 'sucesso!'
         })
