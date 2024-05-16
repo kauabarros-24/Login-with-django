@@ -12,7 +12,7 @@ class User(AbstractUser):
 
 #---------------------------------------------------------------------------------------#
 
-class PasswordReset(models.Model):
+class ForgetPassword(models.Model):
     email = models.EmailField(max_length=255)
     token = models.CharField(max_length=255, unique=True)
 

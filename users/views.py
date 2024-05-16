@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from .serializer import UserSerializer
-from .models import User
-import jwt, datetime
+from .models import User, ForgetPassword
+import jwt, datetime, random, string
 
 class RegisterView(APIView):
     def post(self, request):
@@ -70,3 +70,15 @@ class LogoutView(APIView):
         }
     
         return response
+    
+
+class ForgetPasswordView(APIView):
+    def post(self, request):
+        email = request.data['email']
+        token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
+        
+        ForgetPassword.objects.create(email=email, token=token)
+
+        return Response({
+            
+        })
