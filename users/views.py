@@ -78,7 +78,7 @@ class ForgetPasswordView(APIView):
 
         send_mail(
             subject='Reset your password',
-            message='Click <a href="http://127.0.0.1:8000/api/forget">Here</a> for you reset your password'.format(token),
+            message='Click <a href="http://127.0.0.1:8000/api/reset"'+ token + '>Here</a> for you reset your password'.format(token),
             from_email='martinsbarroskaua@gmail.com',
             recipient_list=[email]
         )      
@@ -91,9 +91,8 @@ class ForgetPasswordView(APIView):
 class ResetPasswordView(APIView):
     def post(self, request):
         data = request.data
-        senha = data['password']
 
-        if senha != data['password_confirm']:
+        if data['password'] != data['password_confirm']:
             raise exceptions.APIException('As senhas não coincidem')
         
         passwordReset = ForgetPassword.objects.filter(token=data['token']).first()
@@ -103,7 +102,7 @@ class ResetPasswordView(APIView):
         if not user:
             raise exceptions.NotFound("Usuário não encontrado!")
         
-        user.set_password(senha)
+        user.set_password(data['password'])
         user.save()
 
         return Response({
